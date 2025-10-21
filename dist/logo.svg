@@ -1,0 +1,16 @@
+<!-- Triangle filled with the provided linear gradient -->
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Triangle with gradient fill">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5433FF" />
+      <stop offset="50%" stop-color="#20BDFF" />
+      <stop offset="100%" stop-color="#A5FECB" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background for context (optional) -->
+  <rect width="100%" height="100%" fill="transparent" />
+
+  <!-- Triangle -->
+  <polygon points="100,20 180,170 20,170" fill="url(#gradient)" />
+</svg>
