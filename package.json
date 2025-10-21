@@ -1,6 +1,7 @@
 {
       "name": "vercel-bulk-deployment-manager",
       "version": "1.0.0",
+      "type": "module",
       "private": false,
       "description": "Powerful bulk deployment management tool for Vercel. Delete multiple deployments and projects efficiently.",
       "author": {
