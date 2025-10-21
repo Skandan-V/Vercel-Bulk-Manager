@@ -124,10 +124,10 @@ export function ProjectsTable({
                   aria-label="Select all projects"
                 />
               </TableHead>
-              <TableHead>Project Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Framework</TableHead>
-              <TableHead className="hidden md:table-cell">Created</TableHead>
-              <TableHead className="hidden lg:table-cell">Updated</TableHead>
+              <TableHead className="min-w-[200px] max-w-[300px]">Project Name</TableHead>
+              <TableHead className="hidden sm:table-cell w-[120px]">Framework</TableHead>
+              <TableHead className="hidden md:table-cell w-[150px]">Created</TableHead>
+              <TableHead className="hidden lg:table-cell w-[150px]">Updated</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -140,21 +140,21 @@ export function ProjectsTable({
               
               return (
                 <TableRow key={project.id}>
-                  <TableCell>
+                  <TableCell className="w-12">
                     <Checkbox
                       checked={selectedProjects.has(project.id)}
                       onCheckedChange={() => onToggleSelection(project.id)}
                       aria-label={`Select project ${project.name}`}
                     />
                   </TableCell>
-                  <TableCell className="max-w-[200px] sm:max-w-none">
+                  <TableCell className="min-w-[200px] max-w-[300px]">
                     <a
                       href={projectUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:underline text-primary text-sm break-all"
+                      className="inline-flex items-center gap-1 hover:underline text-primary text-sm"
                     >
-                      <span className="truncate">{project.name}</span>
+                      <span className="truncate block max-w-[280px]">{project.name}</span>
                       <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
                     {frameworkInfo && (
@@ -165,7 +165,7 @@ export function ProjectsTable({
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden sm:table-cell w-[120px]">
                     {frameworkInfo ? (
                       <Badge variant={frameworkInfo.variant} className="text-xs whitespace-nowrap">
                         {frameworkInfo.label}

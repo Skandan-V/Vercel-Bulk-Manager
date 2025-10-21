@@ -136,48 +136,48 @@ export function DeploymentsTable({
                   aria-label="Select all deployments"
                 />
               </TableHead>
-              <TableHead>Deployment URL</TableHead>
-              <TableHead className="hidden md:table-cell">Git Branch</TableHead>
-              <TableHead>State</TableHead>
-              <TableHead className="hidden sm:table-cell">Created At</TableHead>
+              <TableHead className="min-w-[200px] max-w-[300px]">Deployment URL</TableHead>
+              <TableHead className="hidden md:table-cell w-[150px]">Git Branch</TableHead>
+              <TableHead className="w-[100px]">State</TableHead>
+              <TableHead className="hidden sm:table-cell w-[150px]">Created At</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {deployments.map((deployment) => (
               <TableRow key={deployment.uid}>
-                <TableCell>
+                <TableCell className="w-12">
                   <Checkbox
                     checked={selectedDeployments.has(deployment.uid)}
                     onCheckedChange={() => onToggleSelection(deployment.uid)}
                     aria-label={`Select deployment ${deployment.url}`}
                   />
                 </TableCell>
-                <TableCell className="max-w-[200px] sm:max-w-none">
+                <TableCell className="min-w-[200px] max-w-[300px]">
                   <a
                     href={`https://${deployment.url}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 hover:underline text-primary text-sm break-all"
+                    className="inline-flex items-center gap-1 hover:underline text-primary text-sm"
                   >
-                    <span className="truncate">{deployment.url}</span>
+                    <span className="truncate block max-w-[280px]">{deployment.url}</span>
                     <ExternalLink className="h-3 w-3 shrink-0" />
                   </a>
-                  <div className="md:hidden mt-1 text-xs text-muted-foreground">
+                  <div className="md:hidden mt-1 text-xs text-muted-foreground truncate">
                     {deployment.meta?.githubCommitRef || "No branch"}
                   </div>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <span className="text-sm text-muted-foreground">
+                <TableCell className="hidden md:table-cell w-[150px]">
+                  <span className="text-sm text-muted-foreground truncate block">
                     {deployment.meta?.githubCommitRef || "—"}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[100px]">
                   <Badge variant={getStateVariant(deployment.state)} className="text-xs whitespace-nowrap">
                     {deployment.state}
                   </Badge>
                 </TableCell>
-                <TableCell className="hidden sm:table-cell text-sm text-muted-foreground whitespace-nowrap">
+                <TableCell className="hidden sm:table-cell text-sm text-muted-foreground whitespace-nowrap w-[150px]">
                   {formatDate(deployment.created)}
                 </TableCell>
                 <TableCell>
