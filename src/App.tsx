@@ -382,7 +382,7 @@ export default function App() {
           <CardHeader className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">
-                <Rocket className="h-6 w-6 text-primary" />
+                <img src="/logo.svg" alt="Hyperdyn Logo" className="h-8 w-8" />
               </div>
               <div>
                 <CardTitle className="flex items-center gap-2">
@@ -447,11 +447,14 @@ export default function App() {
         <div className="flex-1 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 w-full">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 sm:mb-12">
-            <div>
-              <h1 className="text-2xl sm:text-3xl">Vercel Manager</h1>
-              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                Choose a management option
-              </p>
+            <div className="flex items-center gap-3">
+              <img src="/logo.svg" alt="Hyperdyn Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl">Vercel Manager</h1>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                  Choose a management option
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
@@ -536,6 +539,7 @@ export default function App() {
               <Button variant="ghost" size="icon" onClick={handleBackToSelect} className="shrink-0 h-9 w-9">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
+              <img src="/logo.svg" alt="Hyperdyn Logo" className="h-6 w-6 sm:h-7 sm:w-7 shrink-0" />
               <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl truncate">Manage Deployments</h1>
                 <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">
@@ -666,6 +670,7 @@ export default function App() {
             <Button variant="ghost" size="icon" onClick={handleBackToSelect} className="shrink-0 h-9 w-9">
               <ArrowLeft className="h-4 w-4" />
             </Button>
+            <img src="/logo.svg" alt="Hyperdyn Logo" className="h-6 w-6 sm:h-7 sm:w-7 shrink-0" />
             <div className="min-w-0">
               <h1 className="text-xl sm:text-2xl truncate">Bulk Delete Projects</h1>
               <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">
