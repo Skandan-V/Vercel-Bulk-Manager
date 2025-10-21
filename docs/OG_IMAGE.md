@@ -1,75 +1,55 @@
-# Dynamic OG Image Generation
+# OG Image Generation
 
-This project uses `@vercel/og` to generate Open Graph images dynamically. No need to create or replace static images!
+This project uses a free external service for Open Graph image generation instead of custom API endpoints.
 
 ## How It Works
 
-The OG image is generated on-the-fly at `/api/og` endpoint using Vercel's Edge Functions.
+The OG images are generated using `og-image.vercel.app`, a free service that creates beautiful Open Graph images.
 
-## Usage
+## Current Configuration
 
-### Default Image
+The project is configured to use:
+- **Service**: `og-image.vercel.app`
+- **Title**: "Vercel Bulk Deployment Manager"
+- **Theme**: Dark
+- **Font Size**: 100px
+- **Icon**: Vercel triangle logo
 
-The default OG image is automatically generated with:
-- Title: "Vercel Bulk Deployment Manager"
-- Description: "Powerful bulk deployment management tool for Vercel"
-- Hyperdyn branding
-- Modern gradient design
+## URL Structure
 
-Access it at: `https://your-domain.com/api/og`
-
-### Custom Parameters
-
-You can customize the OG image by passing URL parameters:
-
+The OG image URL is structured as:
 ```
-/api/og?title=Your Custom Title&description=Your custom description
+https://og-image.vercel.app/[TITLE].png?theme=dark&md=1&fontSize=100px&images=[ICON_URL]
 ```
 
-#### Examples:
+## Current Image URL
 
-**Custom Title:**
 ```
-/api/og?title=Manage 1000+ Deployments Easily
-```
-
-**Custom Title and Description:**
-```
-/api/og?title=Vercel Manager Pro&description=Enterprise deployment management
+https://og-image.vercel.app/Vercel%20Bulk%20Deployment%20Manager.png?theme=dark&md=1&fontSize=100px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fvercel-triangle-white.svg
 ```
 
 ## Features
 
-- ✅ **Dynamic Generation**: No static image files needed
+- ✅ **Free Service**: No custom API needed
 - ✅ **Auto-scaling**: Images are always 1200x630px (optimal for social media)
-- ✅ **Branding**: Hyperdyn branding automatically included
-- ✅ **Modern Design**: Beautiful gradient background with rocket icon
-- ✅ **Fast**: Generated at the edge for optimal performance
-
-## Local Development
-
-The OG image generation works automatically when deployed to Vercel. For local testing:
-
-1. Run your dev server: `npm run dev`
-2. Visit: `http://localhost:3001/api/og`
-3. You'll see a JSON response (Edge Functions run on Vercel)
+- ✅ **Professional Design**: Clean, modern appearance
+- ✅ **Fast**: Served from CDN for optimal performance
+- ✅ **No Build Errors**: No dependency on complex Edge Functions
 
 ## Customization
 
-Edit `/api/og.tsx` to customize:
-- Colors and gradients
-- Logo/icon
-- Typography
-- Layout
-- Additional parameters
+To customize the OG image, modify the URL in `index.html`:
+
+1. Change the title: Replace `Vercel%20Bulk%20Deployment%20Manager` with your URL-encoded title
+2. Change theme: Use `?theme=light` for light theme
+3. Change font size: Modify `fontSize=100px`
+4. Change icon: Replace the `images` parameter with your icon URL (must be URL-encoded)
 
 ## How URLs Are Updated
 
-The `index.html` file automatically references:
-- `og:image`: `/api/og`
-- `twitter:image`: `/api/og`
-
-When deployed to Vercel, these resolve to your full domain URL.
+The `index.html` file references:
+- `og:image`: Points to the og-image.vercel.app URL
+- `twitter:image`: Same URL for Twitter cards
 
 ## Testing
 
@@ -77,6 +57,14 @@ After deployment, test your OG image with:
 - [OpenGraph.xyz](https://www.opengraph.xyz/)
 - [Twitter Card Validator](https://cards-dev.twitter.com/validator)
 - [Facebook Debugger](https://developers.facebook.com/tools/debug/)
+
+## Benefits of This Approach
+
+- No custom API endpoints to maintain
+- No Edge Function complexity
+- No build errors related to unsupported modules
+- Fast and reliable CDN delivery
+- Easy to modify without code changes
 
 ## Benefits Over Static Images
 
