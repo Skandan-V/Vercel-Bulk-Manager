@@ -54,7 +54,7 @@ Built by **[Skandan V](https://github.com/skandan-v)** for **[Hyperdyn](https://
 
 ### Developer: Skandan V
 - GitHub: [@skandan-v](https://github.com/skandan-v)
-- Portfolio: [skandan.dev](https://hyperdyn.tech)
+- Portfolio: [skandan v](https://hyperdyn.tech)
 - Twitter: [@SkandanV](https://twitter.com/@v_skandan)
 
 ### Company: Hyperdyn
