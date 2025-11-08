@@ -22,6 +22,8 @@
 
     .sl-container iframe {
       position: absolute;
+      top: 0;
+      left: 0;
       border: none;
       border-radius: 0;
       width: 100%;
@@ -30,7 +32,7 @@
       transition: all 0.3s ease;
     }
 
-    /* visually rotate and scale to landscape on mobile portrait */
+    /* visually rotate to landscape when in portrait */
     @media (max-width: 768px) and (orientation: portrait) {
       .sl-container iframe {
         transform: rotate(90deg) translateY(-100%);
@@ -39,9 +41,50 @@
         height: 100vw;
       }
     }
+
+    /* overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 100;
+      font-family: system-ui, sans-serif;
+    }
+
+    .overlay button {
+      background: #007bff;
+      border: none;
+      padding: 12px 22px;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    .overlay img {
+      width: 80px;
+      height: auto;
+      margin-bottom: 20px;
+      opacity: 0.85;
+    }
   </style>
 
-  <div class="sl-container">
+  <div class="overlay" id="overlay">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Rotate-device-icon.png" alt="Rotate">
+    <div>Please rotate your phone and tap below to view in fullscreen</div>
+    <button onclick="enableFull()">Enter Fullscreen</button>
+  </div>
+
+  <div class="sl-container" id="sl-container">
     <iframe
       loading="lazy"
       src="https://app.storylane.io/demo/riih1a39wtdg?embed=inline"
@@ -49,4 +92,20 @@
       allowfullscreen>
     </iframe>
   </div>
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const container = document.getElementById('sl-container');
+
+    function enableFull() {
+      overlay.style.display = 'none';
+      if (container.requestFullscreen) container.requestFullscreen();
+      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+
+      // Try to lock to landscape (only works once fullscreen)
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(()=>{});
+      }
+    }
+  </script>
 </div>
