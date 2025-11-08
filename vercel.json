@@ -1,5 +1,13 @@
 {
-  "buildCommand": "npm run build",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
   "routes": [
     {
       "src": "/app(\\.html)?",
@@ -10,10 +18,6 @@
       "dest": "/dist/assets/$1"
     },
     {
-      "src": "/(.*\\.(svg|png|jpg|jpeg|gif|webp|json|xml|txt))",
-      "dest": "/$1"
-    },
-    {
       "src": "/contact(\\.html)?",
       "dest": "/contact.html"
     },
@@ -22,12 +26,12 @@
       "dest": "/terms.html"
     },
     {
-      "src": "/(.*\\.css)",
+      "src": "/(.*\\.(css|svg|png|jpg|jpeg|gif|webp|json|xml|txt|otf|woff|woff2))",
       "dest": "/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/$1"
     }
   ]
 }
