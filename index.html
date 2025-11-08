@@ -1,0 +1,50 @@
+<div>
+  <script async src="https://js.storylane.io/js/v2/storylane.js"></script>
+  <style>
+    .sl-container {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    }
+
+    .sl-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      border: 1px solid rgba(63,95,172,0.35);
+      box-shadow: 0px 0px 18px rgba(26, 19, 72, 0.15);
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    /* Force landscape for mobile screens */
+    @media (max-width: 768px) {
+      .sl-container {
+        padding-bottom: 177.78%; /* Invert aspect ratio for vertical fit */
+        transform: rotate(90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        overflow: hidden;
+      }
+
+      .sl-container iframe {
+        transform: rotate(-90deg);
+        transform-origin: center center;
+      }
+    }
+  </style>
+
+  <div class="sl-container">
+    <iframe loading="lazy" 
+      class="sl-demo" 
+      src="https://app.storylane.io/demo/riih1a39wtdg?embed=inline" 
+      name="sl-embed" 
+      allow="fullscreen" 
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
