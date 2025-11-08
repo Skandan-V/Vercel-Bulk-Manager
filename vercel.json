@@ -11,7 +11,7 @@
   "routes": [
     {
       "src": "/app(\\.html)?",
-      "dest": "/index.html"
+      "dest": "/app.html"
     },
     {
       "src": "/assets/(.*)",

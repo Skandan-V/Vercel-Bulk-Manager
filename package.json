@@ -81,7 +81,7 @@
       },
       "scripts": {
             "dev": "vite",
-            "build": "vite build",
-            "vercel-build": "vite build"
+            "build": "vite build && node scripts/post-build.js",
+            "vercel-build": "vite build && node scripts/post-build.js"
       }
 }

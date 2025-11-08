@@ -53,6 +53,17 @@
     build: {
       target: 'esnext',
       outDir: 'dist',
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          app: path.resolve(__dirname, 'src/index.html'),
+        },
+        output: {
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+      },
     },
     server: {
       port: 3000,
