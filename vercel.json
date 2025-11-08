@@ -1,6 +1,33 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/app", "destination": "/app.html" }
+  "buildCommand": "npm run build",
+  "routes": [
+    {
+      "src": "/app(\\.html)?",
+      "dest": "/dist/index.html"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/dist/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(svg|png|jpg|jpeg|gif|webp|json|xml|txt))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/contact(\\.html)?",
+      "dest": "/contact.html"
+    },
+    {
+      "src": "/terms(\\.html)?",
+      "dest": "/terms.html"
+    },
+    {
+      "src": "/(.*\\.css)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

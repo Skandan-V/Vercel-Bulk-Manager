@@ -1,20 +1,20 @@
 {
       "name": "vercel-bulk-deployment-manager",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "type": "module",
       "private": false,
       "description": "Powerful bulk deployment management tool for Vercel. Delete multiple deployments and projects efficiently.",
       "author": {
             "name": "Skandan V",
-            "email": "skandan@hyperdyn.com",
-            "url": "https://skandan.dev"
+            "email": "skandan@hyperdyn.tech",
+            "url": "https://hyperdyn.tech"
       },
       "license": "MIT",
       "repository": {
             "type": "git",
-            "url": "https://github.com/skandan-v/vercel-bulk-manager.git"
+            "url": "https://github.com/Skandan-V/Vercel-Bulk-Manager.git"
       },
-      "homepage": "https://vercel-bulk-manager.hyperdyn.com",
+      "homepage": "https://vercel-bulk-manager.hyperdyn.tech",
       "keywords": [
             "vercel",
             "deployment",
