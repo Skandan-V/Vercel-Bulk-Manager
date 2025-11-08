@@ -11,11 +11,11 @@
   "routes": [
     {
       "src": "/app(\\.html)?",
-      "dest": "/dist/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/contact(\\.html)?",
