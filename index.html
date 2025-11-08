@@ -1,42 +1,42 @@
 <div>
   <script async src="https://js.storylane.io/js/v2/storylane.js"></script>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    .sl-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       background: #000;
     }
 
-    .sl-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-    }
-
     .sl-container iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
       border: none;
       border-radius: 0;
-      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
       transform-origin: center center;
       transition: all 0.3s ease;
     }
 
-    /* Rotate and scale on mobile portrait */
+    /* visually rotate and scale to landscape on mobile portrait */
     @media (max-width: 768px) and (orientation: portrait) {
-      .sl-container {
-        width: 100vw;
-        height: 100vh;
-      }
-
       .sl-container iframe {
-        transform: rotate(90deg) scale(1.35);
-        transform-origin: center center;
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+        width: 100vh;
+        height: 100vw;
       }
     }
   </style>
@@ -44,9 +44,7 @@
   <div class="sl-container">
     <iframe
       loading="lazy"
-      class="sl-demo"
       src="https://app.storylane.io/demo/riih1a39wtdg?embed=inline"
-      name="sl-embed"
       allow="fullscreen"
       allowfullscreen>
     </iframe>
