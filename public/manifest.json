@@ -1,7 +1,7 @@
 {
-  "name": "Vercel Bulk Deployment Manager by Hyperdyn",
-  "short_name": "Vercel Manager",
-  "description": "Powerful bulk deployment management tool for Vercel. Delete multiple deployments and projects efficiently.",
+  "name": "Vercel Bulk Manager - Delete Multiple Projects at Once",
+  "short_name": "Vercel Bulk Manager",
+  "description": "Delete multiple unwanted Vercel projects and deployments at once. The essential tool Vercel doesn't provide for bulk operations and workspace cleanup.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,12 +9,12 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }
   ],
-  "categories": ["productivity", "developer-tools"],
+  "categories": ["productivity", "developer-tools", "utilities"],
   "lang": "en-US",
   "dir": "ltr"
 }

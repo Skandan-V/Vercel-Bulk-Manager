@@ -1,10 +1,10 @@
-# robots.txt for Vercel Bulk Deployment Manager
+# robots.txt for Vercel Bulk Manager
 
 User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://vercel-bulk-manager.hyperdyn.com/sitemap.xml
+Sitemap: https://vercel-bulk-manager.hyperdyn.tech/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1

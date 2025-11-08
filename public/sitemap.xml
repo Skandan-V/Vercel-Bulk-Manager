@@ -4,9 +4,27 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://vercel-bulk-manager.hyperdyn.com/</loc>
-    <lastmod>2025-10-21</lastmod>
+    <loc>https://vercel-bulk-manager.hyperdyn.tech/</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://vercel-bulk-manager.hyperdyn.tech/app.html</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://vercel-bulk-manager.hyperdyn.tech/contact.html</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://vercel-bulk-manager.hyperdyn.tech/terms.html</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
