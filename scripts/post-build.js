@@ -29,6 +29,15 @@ try {
     await copyFile(sourcePath, destPath);
     console.log(`✓ Copied ${page} to dist/`);
   }
+  
+  // Copy CSS files
+  const cssFiles = ['landing.css'];
+  for (const css of cssFiles) {
+    const sourcePath = join(rootPath, css);
+    const destPath = join(distPath, css);
+    await copyFile(sourcePath, destPath);
+    console.log(`✓ Copied ${css} to dist/`);
+  }
 } catch (error) {
   console.error('Error during post-build:', error.message);
   process.exit(1);
