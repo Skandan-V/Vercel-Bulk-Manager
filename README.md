@@ -71,7 +71,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📧 Contact
 
 For support or inquiries:
-- Email: skandan@hyperdyn.com
+- Email: skandan@hyperdyn.tech
 - Issues: [GitHub Issues](https://github.com/skandan-v/vercel-bulk-manager/issues)
 
 ## 🔗 Links
