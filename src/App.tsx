@@ -62,6 +62,9 @@ export default function App() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteType, setDeleteType] = useState<"deployments" | "projects">("deployments");
+  const [isVerifyingToken, setIsVerifyingToken] = useState(false);
+  const [isValidatingStoredToken, setIsValidatingStoredToken] = useState(false);
+  const [tokenError, setTokenError] = useState<string>("");
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,10 +74,22 @@ export default function App() {
 
   // Load token from localStorage on mount
   useEffect(() => {
-    const savedToken = localStorage.getItem(STORAGE_KEY);
-    if (savedToken) {
-      setToken(savedToken);
-    }
+    const validateStoredToken = async () => {
+      const savedToken = localStorage.getItem(STORAGE_KEY);
+      if (savedToken) {
+        setIsValidatingStoredToken(true);
+        const isValid = await verifyToken(savedToken);
+        if (isValid) {
+          setToken(savedToken);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+          toast.error("Stored token is invalid or expired. Please enter a new token.");
+        }
+        setIsValidatingStoredToken(false);
+      }
+    };
+    
+    validateStoredToken();
   }, []);
 
   // Fetch projects when token is available
@@ -110,6 +125,27 @@ export default function App() {
       setUserInfo(data.user);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
+    }
+  };
+
+  const verifyToken = async (tokenToVerify: string): Promise<boolean> => {
+    try {
+      const response = await fetch("https://api.vercel.com/v2/user", {
+        headers: {
+          Authorization: `Bearer ${tokenToVerify}`,
+        },
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      // If we get user data, the token is valid
+      return !!data.user;
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      return false;
     }
   };
 
@@ -163,14 +199,29 @@ export default function App() {
     }
   };
 
-  const handleSaveToken = () => {
+  const handleSaveToken = async () => {
     if (!tokenInput.trim()) {
       toast.error("Please enter a valid API token");
+      setTokenError("Token cannot be empty");
       return;
     }
+    
+    setTokenError("");
+    setIsVerifyingToken(true);
+    const isValid = await verifyToken(tokenInput.trim());
+    
+    if (!isValid) {
+      setIsVerifyingToken(false);
+      setTokenError("Invalid or expired API token. Please check your token and try again.");
+      toast.error("Invalid token. Please check your API token and try again.");
+      return;
+    }
+    
+    setTokenError("");
     localStorage.setItem(STORAGE_KEY, tokenInput.trim());
     setToken(tokenInput.trim());
-    toast.success("Token saved successfully");
+    setIsVerifyingToken(false);
+    toast.success("Token verified and saved successfully");
   };
 
   const handleLogout = () => {
@@ -261,11 +312,11 @@ export default function App() {
     setShowDeleteDialog(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deleteType === "deployments") {
-      handleDeleteDeployments();
+      await handleDeleteDeployments();
     } else {
-      handleDeleteProjects();
+      await handleDeleteProjects();
     }
   };
 
@@ -279,6 +330,40 @@ export default function App() {
     setSelectedDeployments(newSelection);
   };
 
+  const handleDeleteSingleDeployment = async (uid: string) => {
+    setIsDeleting(true);
+    toast.info("Deleting deployment...");
+
+    try {
+      const response = await fetch(`https://api.vercel.com/v13/deployments/${uid}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete deployment");
+      }
+
+      toast.success("Deployment deleted successfully");
+      
+      // Remove from selection if it was selected
+      const newSelection = new Set(selectedDeployments);
+      newSelection.delete(uid);
+      setSelectedDeployments(newSelection);
+      
+      // Refresh deployments
+      if (selectedProjectId) {
+        fetchDeployments();
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete deployment");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const toggleProjectSelection = (id: string) => {
     const newSelection = new Set(selectedProjects);
     if (newSelection.has(id)) {
@@ -290,10 +375,10 @@ export default function App() {
   };
 
   const toggleSelectAllDeployments = () => {
-    if (selectedDeployments.size === deployments.length) {
+    if (selectedDeployments.size === filteredDeployments.length) {
       setSelectedDeployments(new Set());
     } else {
-      setSelectedDeployments(new Set(deployments.map((d) => d.uid)));
+      setSelectedDeployments(new Set(filteredDeployments.map((d) => d.uid)));
     }
   };
 
@@ -370,12 +455,50 @@ export default function App() {
     (selectedState !== "all" ? 1 : 0) +
     (dateRange.from || dateRange.to ? 1 : 0);
 
+  // Show loading screen while validating stored token
+  if (isValidatingStoredToken) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-lg">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <img src="/logo.svg" alt="Hyperdyn Logo" className="h-8 w-8" />
+              </div>
+              <div>
+                <CardTitle>Vercel Bulk Manager</CardTitle>
+                <CardDescription className="mt-1">
+                  Verifying stored credentials...
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-sm text-muted-foreground">Validating your API token...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Show token input if no token
   if (!token) {
     return (
       <div className="min-h-screen w-full flex flex-col">
         <div className="flex-1 flex items-center justify-center p-4">
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <a
+              href="https://app.storylane.io/share/riih1a39wtdg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-6 px-2 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+              aria-label="View demo guide"
+            >
+              Tutorial
+            </a>
             <ThemeToggle />
           </div>
           <Card className="w-full max-w-md shadow-lg">
@@ -402,6 +525,15 @@ export default function App() {
                 Your token is stored locally in your browser. We don't store or transmit your credentials.
               </AlertDescription>
             </Alert>
+            
+            {tokenError && (
+              <Alert variant="destructive">
+                <AlertDescription className="text-sm">
+                  {tokenError}
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <div className="space-y-2">
               <Label htmlFor="token">Vercel API Token</Label>
               <Input
@@ -409,7 +541,10 @@ export default function App() {
                 type="password"
                 placeholder="Enter your token..."
                 value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
+                onChange={(e) => {
+                  setTokenInput(e.target.value);
+                  setTokenError("");
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSaveToken();
@@ -429,8 +564,15 @@ export default function App() {
                 </a>
               </p>
             </div>
-            <Button onClick={handleSaveToken} className="w-full h-11">
-              Continue
+            <Button onClick={handleSaveToken} className="w-full h-11" disabled={isVerifyingToken}>
+              {isVerifyingToken ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Verifying Token...
+                </>
+              ) : (
+                "Continue"
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -450,15 +592,26 @@ export default function App() {
             <div className="flex items-center gap-3">
               <img src="/logo.svg" alt="Hyperdyn Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
               <div>
-                <h1 className="text-2xl sm:text-3xl">Vercel Manager</h1>
+                <h1 className="text-2xl sm:text-3xl">
+                  {userInfo?.name ? `Hey, ${userInfo.name.split(" ")[0]}!` : "Vercel Manager"}
+                </h1>
                 <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                   Choose a management option
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <a
+                href="https://app.storylane.io/share/riih1a39wtdg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-6 px-2 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                aria-label="View demo guide"
+              >
+                Tutorial
+              </a>
               <ThemeToggle />
-              <ProfileMenu onLogout={handleLogout} />
+              <ProfileMenu onLogout={handleLogout} userInfo={userInfo} />
             </div>
           </div>
 
@@ -548,8 +701,17 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="https://app.storylane.io/share/riih1a39wtdg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-6 px-2 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                aria-label="View demo guide"
+              >
+                Tutorial
+              </a>
               <ThemeToggle />
-              <ProfileMenu onLogout={handleLogout} />
+              <ProfileMenu onLogout={handleLogout} userInfo={userInfo} />
             </div>
           </div>
 
@@ -570,6 +732,7 @@ export default function App() {
                   onValueChange={(value: string) => {
                     setSelectedProjectId(value);
                     setSelectedDeployments(new Set());
+                    clearFilters();
                   }}
                 >
                   <SelectTrigger className="w-full h-11">
@@ -644,6 +807,7 @@ export default function App() {
                       onToggleSelection={toggleDeploymentSelection}
                       onToggleSelectAll={toggleSelectAllDeployments}
                       onUpdate={fetchDeployments}
+                      onDeleteSingle={handleDeleteSingleDeployment}
                     />
                   </CardContent>
                 </Card>
@@ -654,6 +818,34 @@ export default function App() {
               </TabsContent>
             </Tabs>
           )}
+
+          {/* Delete Confirmation Dialog for Deployments */}
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent className="max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2">
+                  <p>
+                    You are about to permanently delete{" "}
+                    <strong className="text-foreground">
+                      {selectedDeployments.size}{" "}
+                      deployment{selectedDeployments.size !== 1 ? 's' : ''}
+                    </strong>
+                    . This action cannot be undone.
+                  </p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteConfirm}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         <Footer />
       </div>
@@ -679,8 +871,17 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="https://app.storylane.io/share/riih1a39wtdg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-6 px-2 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+              aria-label="View demo guide"
+            >
+              Tutorial
+            </a>
             <ThemeToggle />
-            <ProfileMenu onLogout={handleLogout} />
+            <ProfileMenu onLogout={handleLogout} userInfo={userInfo} />
           </div>
         </div>
 

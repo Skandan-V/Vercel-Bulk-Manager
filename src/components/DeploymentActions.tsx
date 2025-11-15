@@ -15,12 +15,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Badge } from "./ui/badge";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import {
   MoreVertical,
   Rocket,
@@ -53,6 +63,7 @@ export function DeploymentActions({
   const [showAliasDialog, setShowAliasDialog] = useState(false);
   const [showLogsSheet, setShowLogsSheet] = useState(false);
   const [showEnvSheet, setShowEnvSheet] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [aliasValue, setAliasValue] = useState("");
   const [logs, setLogs] = useState<string>("");
   const [envVars, setEnvVars] = useState<Array<{ key: string; value: string }>>([]);
@@ -204,8 +215,14 @@ export function DeploymentActions({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8"
+            aria-label="Deployment actions"
+          >
             <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -235,7 +252,10 @@ export function DeploymentActions({
             View Environment Variables
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
+          <DropdownMenuItem 
+            onClick={() => setShowDeleteDialog(true)} 
+            className="text-destructive focus:text-destructive"
+          >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete Deployment
           </DropdownMenuItem>
@@ -335,6 +355,30 @@ export function DeploymentActions({
           </ScrollArea>
         </SheetContent>
       </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Deployment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this deployment? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowDeleteDialog(false);
+                onDelete();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -119,6 +119,7 @@ export function ProjectsTable({
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
+                  id="select-all-projects-checkbox"
                   checked={allSelected}
                   onCheckedChange={onToggleSelectAll}
                   aria-label="Select all projects"

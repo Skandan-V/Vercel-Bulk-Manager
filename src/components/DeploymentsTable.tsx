@@ -25,6 +25,7 @@ interface DeploymentsTableProps {
   onToggleSelection: (uid: string) => void;
   onToggleSelectAll: () => void;
   onUpdate: () => void;
+  onDeleteSingle: (uid: string) => void;
 }
 
 const formatDate = (timestamp: number) => {
@@ -67,6 +68,7 @@ export function DeploymentsTable({
   onToggleSelection,
   onToggleSelectAll,
   onUpdate,
+  onDeleteSingle,
 }: DeploymentsTableProps) {
   if (isLoading) {
     return (
@@ -121,7 +123,10 @@ export function DeploymentsTable({
     );
   }
 
-  const allSelected = selectedDeployments.size === deployments.length && deployments.length > 0;
+  // Check if all filtered deployments are selected (not all deployments)
+  const allFilteredSelected = deployments.length > 0 && 
+    deployments.every(d => selectedDeployments.has(d.uid));
+  const someSelected = deployments.some(d => selectedDeployments.has(d.uid));
 
   return (
     <div className="rounded-lg border overflow-x-auto">
@@ -131,7 +136,7 @@ export function DeploymentsTable({
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={allSelected}
+                  checked={allFilteredSelected}
                   onCheckedChange={onToggleSelectAll}
                   aria-label="Select all deployments"
                 />
@@ -185,7 +190,7 @@ export function DeploymentsTable({
                     deployment={deployment}
                     token={token}
                     projectId={projectId}
-                    onDelete={() => onToggleSelection(deployment.uid)}
+                    onDelete={() => onDeleteSingle(deployment.uid)}
                     onUpdate={onUpdate}
                   />
                 </TableCell>

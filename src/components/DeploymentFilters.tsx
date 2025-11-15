@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Badge } from "./ui/badge";
 import { CalendarIcon, Filter, X } from "lucide-react";
-import { format } from "date-fns@4.1.0";
+import { format } from "date-fns";
 
 interface DeploymentFiltersProps {
   branches: string[];
@@ -142,11 +142,11 @@ export function DeploymentFilters({
                 <Calendar
                   mode="range"
                   selected={{ from: dateRange.from, to: dateRange.to }}
-                  onSelect={(range) =>
+                  onSelect={(range: any) =>
                     onDateRangeChange({ from: range?.from, to: range?.to })
                   }
                   numberOfMonths={2}
-                  disabled={(date) => date > new Date()}
+                  disabled={(date: Date) => date > new Date()}
                 />
               </PopoverContent>
             </Popover>
