@@ -46,30 +46,19 @@
       ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/app(\\.html)?",
-      "dest": "/app.html"
+      "source": "/app",
+      "destination": "/app.html"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "source": "/contact",
+      "destination": "/contact.html"
     },
     {
-      "src": "/contact(\\.html)?",
-      "dest": "/contact.html"
-    },
-    {
-      "src": "/terms(\\.html)?",
-      "dest": "/terms.html"
-    },
-    {
-      "src": "/(.*\\.(css|svg|png|jpg|jpeg|gif|webp|json|xml|txt|otf|woff|woff2))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/terms",
+      "destination": "/terms.html"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
