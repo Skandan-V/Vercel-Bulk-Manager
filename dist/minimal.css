@@ -320,11 +320,15 @@ ul {
 }
 
 h1 {
-  max-width: 18ch;
-  font-size: clamp(2.5rem, 6.6vw, 4.75rem);
+  max-width: 26ch;
+  font-size: clamp(2.25rem, 5.8vw, 4.5rem);
   font-weight: 500;
   letter-spacing: -0.05em;
-  line-height: 1.01;
+  line-height: 1.08;
+}
+
+.hero-line {
+  display: block;
 }
 
 .gradient-text {
