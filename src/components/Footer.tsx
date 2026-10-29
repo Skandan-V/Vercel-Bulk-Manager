@@ -8,11 +8,11 @@ export function Footer() {
     support: [
       { name: "Help Center", href: "https://github.com/skandan-v/vercel-bulk-manager/wiki" },
       { name: "Report Issues", href: "https://github.com/skandan-v/vercel-bulk-manager/issues" },
-      { name: "Contact", href: "mailto:skandan@hyperdyn.tech" },
+      { name: "Contact", href: "mailto:skandan@hyperdyn.in" },
     ],
     company: [
-      { name: "Hyperdyn", href: "https://hyperdyn.tech" },
-      { name: "Portfolio", href: "https://hyperdyn.tech" },
+      { name: "Hyperdyn", href: "https://hyperdyn.in" },
+      { name: "Portfolio", href: "https://hyperdyn.in" },
       { name: "Twitter/X", href: "https://twitter.com/@v_skandan" },
     ],
   };
@@ -118,7 +118,7 @@ export function Footer() {
               </a>
               {" • "}
               <a
-                href="https://hyperdyn.tech"
+                href="https://hyperdyn.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-foreground hover:underline font-medium"

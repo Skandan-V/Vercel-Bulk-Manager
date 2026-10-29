@@ -1,10 +1,26 @@
-
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
   import path from 'path';
 
+  const vercelRewritesPlugin = () => ({
+    name: 'vercel-rewrites-dev-middleware',
+    configureServer(server: any) {
+      server.middlewares.use((req: any, _res: any, next: any) => {
+        const url = req.url?.split('?')[0];
+        if (url === '/app' || url === '/app.html') {
+          req.url = '/src/index.html' + (req.url?.includes('?') ? '?' + req.url.split('?')[1] : '');
+        } else if (url === '/contact') {
+          req.url = '/contact.html';
+        } else if (url === '/terms') {
+          req.url = '/terms.html';
+        }
+        next();
+      });
+    },
+  });
+
   export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), vercelRewritesPlugin()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {

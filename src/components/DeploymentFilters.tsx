@@ -44,35 +44,40 @@ export function DeploymentFilters({
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <Input
-            placeholder="Search by URL or commit message..."
+            placeholder="Search by URL, commit, branch, or ID..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="h-10"
           />
         </div>
-        <Button
-          variant={showFilters ? "default" : "outline"}
-          onClick={() => setShowFilters(!showFilters)}
-          className="h-10 gap-2"
-        >
-          <Filter className="h-4 w-4" />
-          Filters
-          {activeFilterCount > 0 && (
-            <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">
-              {activeFilterCount}
-            </Badge>
-          )}
-        </Button>
-        {activeFilterCount > 0 && (
+        <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            onClick={onClearFilters}
-            className="h-10"
+            type="button"
+            variant={showFilters ? "default" : "outline"}
+            onClick={() => setShowFilters(!showFilters)}
+            className="h-10 gap-2 flex-1 sm:flex-initial"
           >
-            <X className="h-4 w-4 mr-2" />
-            Clear
+            <Filter className="h-4 w-4" />
+            Filters
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">
+                {activeFilterCount}
+              </Badge>
+            )}
           </Button>
-        )}
+          {activeFilterCount > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClearFilters}
+              className="h-10 px-3"
+              title="Clear all filters"
+            >
+              <X className="h-4 w-4 mr-1.5" />
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Advanced Filters */}
@@ -121,21 +126,23 @@ export function DeploymentFilters({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full h-10 justify-start text-left"
+                  className="w-full h-10 justify-start text-left truncate font-normal"
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      <>
-                        {format(dateRange.from, "MMM d")} -{" "}
-                        {format(dateRange.to, "MMM d, yyyy")}
-                      </>
+                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "MMM d")} -{" "}
+                          {format(dateRange.to, "MMM d, yyyy")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "MMM d, yyyy")
+                      )
                     ) : (
-                      format(dateRange.from, "MMM d, yyyy")
-                    )
-                  ) : (
-                    "Pick a date range"
-                  )}
+                      "Pick a date range"
+                    )}
+                  </span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -145,7 +152,7 @@ export function DeploymentFilters({
                   onSelect={(range: any) =>
                     onDateRangeChange({ from: range?.from, to: range?.to })
                   }
-                  numberOfMonths={2}
+                  numberOfMonths={1}
                   disabled={(date: Date) => date > new Date()}
                 />
               </PopoverContent>

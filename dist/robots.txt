@@ -4,7 +4,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://vercel-bulk-manager.hyperdyn.tech/sitemap.xml
+Sitemap: https://vercel-bulk-manager.hyperdyn.in/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1

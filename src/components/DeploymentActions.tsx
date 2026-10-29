@@ -49,14 +49,26 @@ interface DeploymentActionsProps {
   };
   token: string;
   projectId: string;
+  projectName?: string;
+  teamId?: string;
   onDelete: () => void;
   onUpdate: () => void;
+}
+
+interface EnvVarDisplay {
+  id: string;
+  key: string;
+  value: string;
+  target?: string[];
+  type?: string;
 }
 
 export function DeploymentActions({
   deployment,
   token,
   projectId,
+  projectName,
+  teamId,
   onDelete,
   onUpdate,
 }: DeploymentActionsProps) {
@@ -66,14 +78,17 @@ export function DeploymentActions({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [aliasValue, setAliasValue] = useState("");
   const [logs, setLogs] = useState<string>("");
-  const [envVars, setEnvVars] = useState<Array<{ key: string; value: string }>>([]);
+  const [envVars, setEnvVars] = useState<EnvVarDisplay[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const getTeamQuery = (prefix: "?" | "&" = "?") =>
+    teamId ? `${prefix}teamId=${encodeURIComponent(teamId)}` : "";
 
   const handlePromoteToProduction = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.vercel.com/v13/deployments/${deployment.uid}/promote`,
+        `https://api.vercel.com/v10/projects/${projectId}/promote/${deployment.uid}${getTeamQuery()}`,
         {
           method: "POST",
           headers: {
@@ -83,7 +98,10 @@ export function DeploymentActions({
         }
       );
 
-      if (!response.ok) throw new Error("Failed to promote deployment");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to promote deployment");
+      }
 
       toast.success("Deployment promoted to production!");
       onUpdate();
@@ -95,7 +113,8 @@ export function DeploymentActions({
   };
 
   const handleAssignAlias = async () => {
-    if (!aliasValue.trim()) {
+    const cleanedAlias = aliasValue.trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+    if (!cleanedAlias) {
       toast.error("Please enter a valid domain");
       return;
     }
@@ -103,20 +122,23 @@ export function DeploymentActions({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.vercel.com/v2/deployments/${deployment.uid}/aliases`,
+        `https://api.vercel.com/v2/deployments/${deployment.uid}/aliases${getTeamQuery()}`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ alias: aliasValue }),
+          body: JSON.stringify({ alias: cleanedAlias }),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to assign alias");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to assign alias");
+      }
 
-      toast.success(`Alias assigned: ${aliasValue}`);
+      toast.success(`Alias assigned: ${cleanedAlias}`);
       setShowAliasDialog(false);
       setAliasValue("");
       onUpdate();
@@ -130,22 +152,28 @@ export function DeploymentActions({
   const handleRedeploy = async () => {
     setIsLoading(true);
     try {
+      const payload: Record<string, any> = {
+        deploymentId: deployment.uid,
+        name: projectName || projectId,
+        target: "production",
+      };
+
       const response = await fetch(
-        `https://api.vercel.com/v13/deployments`,
+        `https://api.vercel.com/v13/deployments${getTeamQuery()}`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            deploymentId: deployment.uid,
-            target: "production",
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to redeploy");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to redeploy");
+      }
 
       toast.success("Redeployment initiated!");
       onUpdate();
@@ -161,7 +189,7 @@ export function DeploymentActions({
     setShowLogsSheet(true);
     try {
       const response = await fetch(
-        `https://api.vercel.com/v2/deployments/${deployment.uid}/events`,
+        `https://api.vercel.com/v3/deployments/${deployment.uid}/events?limit=100&direction=forward${getTeamQuery("&")}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,14 +197,48 @@ export function DeploymentActions({
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch logs");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to fetch logs");
+      }
 
-      const data = await response.json();
-      const logsText = data.events?.map((e: any) => e.text || e.payload?.text).filter(Boolean).join("\n") || "No logs available";
-      setLogs(logsText);
+      // Read raw text to handle JSON arrays, ndjson streams, or plain text safely
+      const rawText = await response.text();
+      let logsText = "";
+
+      try {
+        const parsed = JSON.parse(rawText);
+        const eventsList = Array.isArray(parsed) ? parsed : (parsed.events || []);
+        logsText = eventsList
+          .map((e: any) =>
+            e.text ||
+            e.payload?.text ||
+            e.payload?.message ||
+            e.message ||
+            (typeof e === "string" ? e : JSON.stringify(e))
+          )
+          .filter(Boolean)
+          .join("\n");
+      } catch {
+        // Fallback for ndjson or plain text lines
+        const lines = rawText.split("\n").filter((l) => l.trim().length > 0);
+        logsText = lines
+          .map((line) => {
+            try {
+              const obj = JSON.parse(line);
+              return obj.text || obj.payload?.text || obj.payload?.message || obj.message || line;
+            } catch {
+              return line;
+            }
+          })
+          .join("\n");
+      }
+
+      setLogs(logsText || "No logs available for this deployment.");
     } catch (error) {
-      setLogs("Failed to load logs. This might be due to API limitations.");
-      toast.error("Could not fetch deployment logs");
+      const msg = error instanceof Error ? error.message : "Could not fetch deployment logs";
+      setLogs(`Failed to load logs: ${msg}`);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +249,7 @@ export function DeploymentActions({
     setShowEnvSheet(true);
     try {
       const response = await fetch(
-        `https://api.vercel.com/v9/projects/${projectId}/env`,
+        `https://api.vercel.com/v10/projects/${projectId}/env${getTeamQuery()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -195,17 +257,23 @@ export function DeploymentActions({
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch environment variables");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to fetch environment variables");
+      }
 
       const data = await response.json();
       setEnvVars(
-        data.envs?.map((env: any) => ({
+        (data.envs || []).map((env: any) => ({
+          id: env.id,
           key: env.key,
-          value: env.value ? "********" : "Not set",
-        })) || []
+          value: env.value ? env.value : "Encrypted",
+          target: Array.isArray(env.target) ? env.target : (env.target ? [env.target] : []),
+          type: env.type || "encrypted",
+        }))
       );
     } catch (error) {
-      toast.error("Could not fetch environment variables");
+      toast.error(error instanceof Error ? error.message : "Could not fetch environment variables");
     } finally {
       setIsLoading(false);
     }
@@ -323,7 +391,7 @@ export function DeploymentActions({
           <SheetHeader>
             <SheetTitle>Environment Variables</SheetTitle>
             <SheetDescription>
-              Variables applied to this deployment
+              Variables configured for this project
             </SheetDescription>
           </SheetHeader>
           <ScrollArea className="h-[calc(100vh-120px)] mt-6">
@@ -331,15 +399,23 @@ export function DeploymentActions({
               <div className="text-sm text-muted-foreground">Loading...</div>
             ) : envVars.length > 0 ? (
               <div className="space-y-3">
-                {envVars.map((env, index) => (
+                {envVars.map((env) => (
                   <div
-                    key={index}
-                    className="p-3 border rounded-lg bg-muted/30 space-y-1"
+                    key={env.id || env.key}
+                    className="p-3 border rounded-lg bg-muted/30 space-y-2"
                   >
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
-                        {env.key}
-                      </Badge>
+                    <div className="flex items-center gap-2 flex-wrap justify-between">
+                      <span className="font-mono text-sm font-semibold">{env.key}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {env.target?.map((t) => (
+                          <Badge key={t} variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {t}
+                          </Badge>
+                        ))}
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                          {env.type}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="text-xs text-muted-foreground font-mono">
                       {env.value}

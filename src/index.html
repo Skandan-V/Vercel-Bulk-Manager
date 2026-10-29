@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RSM0LFT71"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-4RSM0LFT71');
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
@@ -10,16 +20,16 @@
     <meta name="description" content="Delete multiple unwanted Vercel projects and deployments at once. The essential tool Vercel doesn't provide - bulk delete projects, manage deployments, and clean up your workspace efficiently." />
     <meta name="keywords" content="Vercel bulk delete, delete multiple Vercel projects, Vercel project manager, bulk deployment delete, Vercel cleanup tool, remove Vercel projects, Vercel batch delete, Vercel API tool, developer productivity, Hyperdyn, Skandan V" />
     <meta name="author" content="Hyperdyn - Skandan V" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="language" content="English" />
     <meta name="revisit-after" content="7 days" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://vercel-bulk-manager.hyperdyn.tech/app" />
+    <meta property="og:url" content="https://vercel-bulk-manager.hyperdyn.in/app" />
     <meta property="og:title" content="Vercel Bulk Manager - Delete Multiple Projects at Once" />
     <meta property="og:description" content="The essential tool Vercel doesn't provide. Delete multiple unwanted Vercel projects and deployments at once." />
-    <meta property="og:image" content="https://vercel-bulk-manager.hyperdyn.tech/banner.png" />
+    <meta property="og:image" content="https://vercel-bulk-manager.hyperdyn.in/banner.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -27,14 +37,14 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://vercel-bulk-manager.hyperdyn.tech/app" />
+    <meta name="twitter:url" content="https://vercel-bulk-manager.hyperdyn.in/app" />
     <meta name="twitter:title" content="Vercel Bulk Manager - Delete Multiple Projects" />
     <meta name="twitter:description" content="The essential tool Vercel doesn't provide. Delete multiple unwanted Vercel projects and deployments at once." />
-    <meta name="twitter:image" content="https://vercel-bulk-manager.hyperdyn.tech/banner.png" />
+    <meta name="twitter:image" content="https://vercel-bulk-manager.hyperdyn.in/banner.png" />
     <meta name="twitter:creator" content="@v_skandan" />
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://vercel-bulk-manager.hyperdyn.tech/app" />
+    <link rel="canonical" href="https://vercel-bulk-manager.hyperdyn.in/app" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
@@ -44,6 +54,21 @@
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
+    <!-- Theme Detection (prevents flash in dark mode) -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Theme Color -->
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
@@ -54,9 +79,8 @@
     <link rel="preload" href="/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/poppins-700.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     
-    <!-- Image Preloading - Avatar and branding images -->
+    <!-- Image Preloading - branding -->
     <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
-    <link rel="preload" href="/banner.png" as="image" type="image/png" />
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -85,7 +109,7 @@
         "name": "Hyperdyn"
       },
       "description": "Delete multiple unwanted Vercel projects and deployments at once. The essential bulk management tool that Vercel doesn't provide.",
-      "url": "https://vercel-bulk-manager.hyperdyn.tech/app",
+      "url": "https://vercel-bulk-manager.hyperdyn.in/app",
       "permissions": "Requires Vercel API token"
     }
     </script>

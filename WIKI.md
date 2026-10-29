@@ -530,7 +530,7 @@ npm run build
 
 ### Company
 **Hyperdyn**
-- Website: [hyperdyn.com](https://hyperdyn.com)
+- Website: [hyperdyn.in](https://hyperdyn.in)
 - Building powerful developer tools
 
 ### Open Source
@@ -546,7 +546,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- 📧 Email: skandan@hyperdyn.com
+- 📧 Email: skandan@hyperdyn.in
 - 🐛 Issues: [GitHub Issues](https://github.com/skandan-v/vercel-bulk-manager/issues)
 - 📖 Docs: This Wiki
 - 💬 Discussions: [GitHub Discussions](https://github.com/skandan-v/vercel-bulk-manager/discussions)
@@ -570,4 +570,4 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 **Made with ❤️ by Skandan V at Hyperdyn**
 
-For the latest updates, visit: [https://vercel-bulk-manager.hyperdyn.com](https://vercel-bulk-manager.hyperdyn.com)
+For the latest updates, visit: [https://vercel-bulk-manager.hyperdyn.in](https://vercel-bulk-manager.hyperdyn.in)

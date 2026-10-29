@@ -22,21 +22,26 @@ interface DeploymentsTableProps {
   isLoading: boolean;
   token: string;
   projectId: string;
+  projectName?: string;
+  teamId?: string;
   onToggleSelection: (uid: string) => void;
   onToggleSelectAll: () => void;
   onUpdate: () => void;
   onDeleteSingle: (uid: string) => void;
 }
 
-const formatDate = (timestamp: number) => {
+const formatDate = (timestamp?: number) => {
+  if (!timestamp || isNaN(timestamp)) return "—";
   const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "—";
+
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return "Just now";
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  if (diffInSeconds < 0 || diffInSeconds < 60) return "Just now";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
   
   return date.toLocaleDateString("en-US", {
     year: "numeric",
@@ -53,7 +58,10 @@ const getStateVariant = (state: string): "default" | "destructive" | "secondary"
       return "destructive";
     case "BUILDING":
     case "QUEUED":
+    case "INITIALIZING":
       return "secondary";
+    case "CANCELED":
+      return "outline";
     default:
       return "outline";
   }
@@ -65,6 +73,8 @@ export function DeploymentsTable({
   isLoading,
   token,
   projectId,
+  projectName,
+  teamId,
   onToggleSelection,
   onToggleSelectAll,
   onUpdate,
@@ -123,10 +133,9 @@ export function DeploymentsTable({
     );
   }
 
-  // Check if all filtered deployments are selected (not all deployments)
-  const allFilteredSelected = deployments.length > 0 && 
-    deployments.every(d => selectedDeployments.has(d.uid));
-  const someSelected = deployments.some(d => selectedDeployments.has(d.uid));
+  const allFilteredSelected =
+    deployments.length > 0 && deployments.every((d) => selectedDeployments.has(d.uid));
+  const someSelected = deployments.some((d) => selectedDeployments.has(d.uid));
 
   return (
     <div className="rounded-lg border overflow-x-auto">
@@ -136,7 +145,7 @@ export function DeploymentsTable({
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={allFilteredSelected}
+                  checked={allFilteredSelected ? true : (someSelected ? "indeterminate" : false)}
                   onCheckedChange={onToggleSelectAll}
                   aria-label="Select all deployments"
                 />
@@ -149,53 +158,66 @@ export function DeploymentsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {deployments.map((deployment) => (
-              <TableRow key={deployment.uid}>
-                <TableCell className="w-12">
-                  <Checkbox
-                    checked={selectedDeployments.has(deployment.uid)}
-                    onCheckedChange={() => onToggleSelection(deployment.uid)}
-                    aria-label={`Select deployment ${deployment.url}`}
-                  />
-                </TableCell>
-                <TableCell className="min-w-[200px] max-w-[300px]">
-                  <a
-                    href={`https://${deployment.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 hover:underline text-primary text-sm"
-                  >
-                    <span className="truncate block max-w-[280px]">{deployment.url}</span>
-                    <ExternalLink className="h-3 w-3 shrink-0" />
-                  </a>
-                  <div className="md:hidden mt-1 text-xs text-muted-foreground truncate">
-                    {deployment.meta?.githubCommitRef || "No branch"}
-                  </div>
-                </TableCell>
-                <TableCell className="hidden md:table-cell w-[150px]">
-                  <span className="text-sm text-muted-foreground truncate block">
-                    {deployment.meta?.githubCommitRef || "—"}
-                  </span>
-                </TableCell>
-                <TableCell className="w-[100px]">
-                  <Badge variant={getStateVariant(deployment.state)} className="text-xs whitespace-nowrap">
-                    {deployment.state}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-sm text-muted-foreground whitespace-nowrap w-[150px]">
-                  {formatDate(deployment.created)}
-                </TableCell>
-                <TableCell>
-                  <DeploymentActions
-                    deployment={deployment}
-                    token={token}
-                    projectId={projectId}
-                    onDelete={() => onDeleteSingle(deployment.uid)}
-                    onUpdate={onUpdate}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            {deployments.map((deployment) => {
+              const fullUrl = deployment.url.startsWith("http://") || deployment.url.startsWith("https://")
+                ? deployment.url
+                : `https://${deployment.url}`;
+
+              return (
+                <TableRow key={deployment.uid}>
+                  <TableCell className="w-12">
+                    <Checkbox
+                      checked={selectedDeployments.has(deployment.uid)}
+                      onCheckedChange={() => onToggleSelection(deployment.uid)}
+                      aria-label={`Select deployment ${deployment.url}`}
+                    />
+                  </TableCell>
+                  <TableCell className="min-w-[200px] max-w-[300px]">
+                    <a
+                      href={fullUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 hover:underline text-primary text-sm font-medium"
+                    >
+                      <span className="truncate block max-w-[280px]">{deployment.url}</span>
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
+                    {deployment.meta?.githubCommitMessage && (
+                      <div className="text-xs text-muted-foreground truncate max-w-[280px] mt-0.5" title={deployment.meta.githubCommitMessage}>
+                        {deployment.meta.githubCommitMessage}
+                      </div>
+                    )}
+                    <div className="md:hidden mt-1 text-xs text-muted-foreground truncate">
+                      {deployment.meta?.githubCommitRef || "No branch"}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell w-[150px]">
+                    <span className="text-sm text-muted-foreground truncate block font-mono">
+                      {deployment.meta?.githubCommitRef || "—"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="w-[100px]">
+                    <Badge variant={getStateVariant(deployment.state)} className="text-xs whitespace-nowrap">
+                      {deployment.state}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground whitespace-nowrap w-[150px]">
+                    {formatDate(deployment.created)}
+                  </TableCell>
+                  <TableCell>
+                    <DeploymentActions
+                      deployment={deployment}
+                      token={token}
+                      projectId={projectId}
+                      projectName={projectName}
+                      teamId={teamId}
+                      onDelete={() => onDeleteSingle(deployment.uid)}
+                      onUpdate={onUpdate}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
